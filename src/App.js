@@ -143,7 +143,7 @@ class BoxWithVariable extends React.Component {
             console.log('Error');
             return calc;
         } else {
-            return calc[0];
+            return calc[0].toString();
         }
     };
     doCalculate = (event) => {
