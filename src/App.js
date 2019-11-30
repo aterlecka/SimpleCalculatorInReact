@@ -1,101 +1,76 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
 
-// exercise 1
-class Box extends React.Component {
+class DigitButton extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {
-            value: 'Hi Hubert',
-        };
+        this.handleClick = this.handleClick.bind(this);
     }
 
-
-    click = () => {
-
-        alert(this.state.value)
-
-
-    };
-
-    changeNameValue = () => {
-        document.getElementById("buttonName").value = "HELLO HUBI";
+    handleClick() {
+        this.props.onClick(this.props.digit);
     }
-
 
     render() {
-        return (
-            <div>
-                <input type="button" id={"buttonName"} value={"Hello World!"} onClick={this.changeNameValue}/>
-            </div>
-        );
+        return <button onClick={this.handleClick}>{this.props.digit}</button>;
     }
 }
 
-
-// Exercise 2
-class MyVariableAndDigit extends React.Component {
+class OperationButton extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {
-            number1: '',
-            number2: 5,
-            value: '',
-        };
+        this.handleClick = this.handleClick.bind(this);
+    }
+
+    handleClick() {
+        this.props.onClick(this.props.operation);
+    }
+
+    render() {
+        return <button onClick={this.handleClick}>{this.props.operation}</button>;
+    }
+}
+
+class App extends React.Component {
+    constructor(props) {
+        super(props);
+
+        this.handleDigitClick = this.handleDigitClick.bind(this);
+        this.handleOperationClick = this.handleOperationClick.bind(this);
+        this.handleResultClick = this.handleResultClick.bind(this);
         this.handleChange = this.handleChange.bind(this);
-        this.doAction2 = this.doAction2.bind(this);
+
+        this.state = {
+            operation: "",
+            result: '',
+        };
+    }
+
+    handleDigitClick(digit) {
+        console.log(`APP: Digit clicked: ${digit}`);
+        this.setState(prevState => ({
+            result: prevState.result + digit
+        }));
+    }
+
+    handleOperationClick(operation) {
+        console.log(`APP: Operation clicked: ${operation}`);
+        this.setState(prevState => ({
+            result: prevState.result + operation
+        }));
     }
 
     handleChange = (event) => {
-        this.setState({value: event.target.value});
+        this.setState({result: event.target.value});
     };
 
-    doAction2(event) {
-        this.setState({value: parseInt(this.state.value) + parseInt(this.state.value)});
+    handleResultClick = (event) => {
+        this.setState({result: this.calculate(this.parseCalculationString(this.state.result))});
         event.preventDefault();
-    }
-
-    render() {
-        return (
-            <div>
-                <input type='text' value={this.state.value}
-                       onChange={this.handleChange}/>
-                <input type="button" onClick={this.doAction2} value="Add+5"/>
-
-            </div>
-        );
-    }
-}
-
-
-// // Exercise 3
-//
-class BoxWithVariable extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            value: '',
-            userInput: '',
-
-
-        };
-        this.handleChange = this.handleChange.bind(this);
-        this.calculate = this.calculate.bind(this);
-        this.parseCalculationString = this.parseCalculationString.bind(this);
-
-
-    }
-
-    handleChange = (event) => {
-        this.setState({value: event.target.value});
     };
     parseCalculationString = (s) => {
-        // --- Parse a calculation string into an array of numbers and operators
-        // ch=znak
         let calculation = [],
             current = '';
-
 
         for (let i = 0, ch; ch = s.charAt(i); i++) {
             if ('+-/*^'.indexOf(ch) > -1) {
@@ -143,25 +118,47 @@ class BoxWithVariable extends React.Component {
             console.log('Error');
             return calc;
         } else {
-            return calc[0];
+            return calc[0].toString();
         }
     };
-    doCalculate = (event) => {
-        this.setState({value: this.calculate(this.parseCalculationString(this.state.value))});
-        event.preventDefault();
-    };
+
     render() {
         return (
             <div>
-                <input type='text' id="userInput" value={this.state.value} onChange={this.handleChange}/>
-                <input type="button" value="Calculate" id="calculate" onClick={this.doCalculate}/>
+                <table>
+                    <tbody>
+                    <tr>
+                        <td colSpan="4"><input type="text" onChange={this.handleChange} value={this.state.result}/></td>
+                    </tr>
+                    <tr>
+                        <td><DigitButton onClick={this.handleDigitClick} digit={1}/></td>
+                        <td><DigitButton onClick={this.handleDigitClick} digit={2}/></td>
+                        <td><DigitButton onClick={this.handleDigitClick} digit={3}/></td>
+                        <td><OperationButton onClick={this.handleOperationClick} operation="+"/></td>
+                    </tr>
+                    <tr>
+                        <td><DigitButton onClick={this.handleDigitClick} digit={4}/></td>
+                        <td><DigitButton onClick={this.handleDigitClick} digit={5}/></td>
+                        <td><DigitButton onClick={this.handleDigitClick} digit={6}/></td>
+                        <td><OperationButton onClick={this.handleOperationClick} operation="-"/></td>
+                    </tr>
+                    <tr>
+                        <td><DigitButton onClick={this.handleDigitClick} digit={7}/></td>
+                        <td><DigitButton onClick={this.handleDigitClick} digit={8}/></td>
+                        <td><DigitButton onClick={this.handleDigitClick} digit={9}/></td>
+                        <td><OperationButton onClick={this.handleOperationClick} operation="*"/></td>
+                    </tr>
+                    <tr>
+                        <td colSpan="2"><DigitButton onClick={this.handleDigitClick} digit={0}/></td>
+                        <td><input type="button" value="=" onClick={this.handleResultClick} operation="="/></td>
+                        <td><OperationButton onClick={this.handleOperationClick} operation="/"/></td>
+                    </tr>
+                    </tbody>
+                </table>
             </div>
         );
     }
 }
 
-export default BoxWithVariable;
 
-
-
-
+export default App;
